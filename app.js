@@ -1,7 +1,10 @@
 const  express = require('express')
 const  app = express()
 const mysql = require('mysql')
+const bodyParser = require('body-parser')
 
+app.set("view engine" , "ejs")
+app.use(bodyParser.urlencoded({extended : true}))
 
 var connection = mysql.createConnection({
 	host : 'localhost',
@@ -17,12 +20,26 @@ app.get("/", (req , res) => {
 	connection.query(q , (err , results) => {
 		if (err) throw err; 
 		var count = results[0].count
-		res.send('WE have ' + count + ' users in our db')
+		// res.send('WE have ' + count + ' users in our db')
+		res.render('home' , {data: count});
 	})
 	
 	// Respond with that count
 	
 	
+	
+})
+
+app.post('/register' , (req , res ) => {
+var person = {
+	email : req.body.email
+  }
+
+connection.query('INSERT INTO users SET ? ' , person , (err,results) => {
+	if(err) throw err;
+	console.log(results)
+	res.send("Thanks for joinging our waitlist")
+ })
 })
 
 
